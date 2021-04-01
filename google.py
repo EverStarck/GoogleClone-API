@@ -37,7 +37,7 @@ def scraper(html):
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0"
 headers = {"user-agent": USER_AGENT}
 
-query = "BUSCADOR TEMÁTICO DE LA PLATAFORMA NACIONAL"
+query = "hola"
 googleUrl = "https://www.google.com/search?q="+query
 
 html = r.get(googleUrl, headers=headers).content
@@ -49,6 +49,7 @@ parentDiv = str(BeautifulSoup(html, "html.parser").findAll('div', attrs={'class'
 g = BeautifulSoup(parentDiv, 'html.parser').findAll('div', attrs={'class':'g'})
 
 data = []
+tableInfoList = []
 
 for i in range(0,len(g)):
     # print(g[i])
@@ -94,14 +95,20 @@ for i in range(0,len(g)):
     else:
         desc = desc.replace('<span class="aCOpRe"><span>', "").replace('<span>', '').replace('</span></span>', '')
 
-    # # Main
-    # print(url, "url")
-    # print(tittle, "tittle")
-    # print(cite, "cite")
-    # # print(table, "table")
-    # # Desc
-    # print(desc, "desc")
-    # # print(len(desc), "desc")
+    # Table
+    table = str(BeautifulSoup(gString, 'html.parser').find('table'))
+    tableInfoDiv = BeautifulSoup(gString, 'html.parser').findAll('div', attrs={'class':'usJj9c'})
+    for j in range(0, len(tableInfoDiv)):
+        # print(tableInfoDiv[j])
+        urlTable = BeautifulSoup(str(tableInfoDiv[j]), 'html.parser').find('a')['href']
+        tittleTable = BeautifulSoup(str(tableInfoDiv[j]), 'html.parser').find('h3').text
+        descTable = BeautifulSoup(str(tableInfoDiv[j]), 'html.parser').find('div', attrs={'class':'st'}).text
+        defaultTable = {
+            "url":urlTable,
+            "tittle": tittleTable,
+            "desc": descTable
+        }
+        tableInfoList.append(defaultTable)
 
     defaultData = {
         "url": url,
@@ -114,7 +121,7 @@ for i in range(0,len(g)):
             "big": cite,
             "small": citeSmall
         },
-        "table": ""
+        "table": tableInfoList
     }
 
     data.append(defaultData)
