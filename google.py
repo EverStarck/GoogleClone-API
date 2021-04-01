@@ -37,7 +37,7 @@ def scraper(html):
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0"
 headers = {"user-agent": USER_AGENT}
 
-query = "python"
+query = "BUSCADOR TEMÁTICO DE LA PLATAFORMA NACIONAL"
 googleUrl = "https://www.google.com/search?q="+query
 
 html = r.get(googleUrl, headers=headers).content
@@ -57,11 +57,14 @@ for i in range(0,len(g)):
 
     # Link Tittle y cita
     yurDiv = str(BeautifulSoup(gString, 'html.parser').findAll('div', attrs={'class':'yuRUbf'}))
-    a = BeautifulSoup(yurDiv, 'html.parser').find('a')['href']
+
+    url = BeautifulSoup(yurDiv, 'html.parser').find('a')['href']
     tittle = BeautifulSoup(yurDiv, 'html.parser').find('h3').text
 
-
-    cite = str(BeautifulSoup(yurDiv, 'html.parser').find('cite'))
+    # Cite
+    citeOriginal = BeautifulSoup(yurDiv, 'html.parser').find('cite')
+    cite = str(citeOriginal)
+    citeSmall = ""
     # Check if cite has span tag
     if '<cite class="iUh30 Zu0yb qLRx3b tjvcx">' in cite:
         cite = cite.replace('<cite class="iUh30 Zu0yb qLRx3b tjvcx">', "").replace('</cite>', "")
@@ -72,19 +75,27 @@ for i in range(0,len(g)):
         cite = re.sub(r'(?=<span).*$', '', cite)
     else:
         # cite hasn't span tag
-        cite = BeautifulSoup(yurDiv, 'html.parser').find('cite').text
-        citeSmall = ""
+        cite = citeOriginal.text
 
-    # table = BeautifulSoup(parentDiv, 'html.parser').find('table')
 
     # Descripcion
     IsZvecDiv = str(BeautifulSoup(gString, 'html.parser').findAll('div', attrs={'class':'IsZvec'}))
     # Comprobar si no tiene desc y si tiene fecha
-    desc = str(BeautifulSoup(IsZvecDiv, 'html.parser').findAll('span')[1])
-    desc = desc.replace("<span>", "").replace("</span>", "")
+    desc= str(BeautifulSoup(IsZvecDiv, 'html.parser').find('span'))
+    descDate = ""
+    # Tiene fecha
+    if '<span class="f">' in desc:
+        description = desc.replace('<span class="aCOpRe"><span class="f">', "")
+        # Desc
+        desc = re.sub(r'^(.*?)\<', '<', description)
+        desc = desc.replace('</span></span>', '').replace('</span><span>', '')
+        # Date
+        descDate = re.sub(r'(?=</span>).*$', '', description)
+    else:
+        desc = desc.replace('<span class="aCOpRe"><span>', "").replace('<span>', '').replace('</span></span>', '')
 
     # # Main
-    # print(a, "a")
+    # print(url, "url")
     # print(tittle, "tittle")
     # print(cite, "cite")
     # # print(table, "table")
@@ -93,10 +104,10 @@ for i in range(0,len(g)):
     # # print(len(desc), "desc")
 
     defaultData = {
-        "url": a,
+        "url": url,
         "tittle": tittle,
         "description": {
-            "date": "",
+            "date": descDate,
             "desc": desc,
         },
         "cite": {
