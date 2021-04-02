@@ -9,8 +9,8 @@ USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100
 headers = {"user-agent": USER_AGENT}
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*.everstarck.com"}})
-# CORS(app)
+# CORS(app, resources={r"/*": {"origins": "*.everstarck.com"}})
+CORS(app)
 
 
 @app.route('/api')
