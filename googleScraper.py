@@ -79,6 +79,7 @@ def data():
             tittleTable = BeautifulSoup(str(tableInfoDiv[j]), 'html.parser').find('h3').text
             descTable = BeautifulSoup(str(tableInfoDiv[j]), 'html.parser').find('div', attrs={'class':'st'}).text
             defaultTable = {
+                "id": f"table{j+1}",
                 "url":urlTable,
                 "tittle": tittleTable,
                 "desc": descTable
@@ -87,6 +88,7 @@ def data():
 
         # DefaultData to add to data list
         defaultData = {
+            "id": i+1,
             "url": url,
             "tittle": tittle,
             "description": {
