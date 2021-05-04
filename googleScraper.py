@@ -9,8 +9,8 @@ USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100
 headers = {"user-agent": USER_AGENT}
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*.everstarck.com"}})
-# CORS(app)
+# CORS(app, resources={r"/*": {"origins": "*.everstarck.com"}})
+CORS(app)
 
 
 @app.route('/api')
@@ -24,9 +24,8 @@ def data():
     # start = timer()
 
     # Get parent of the info that we need
-    parentDiv = str(BeautifulSoup(html, "html.parser").findAll('div', attrs={'class': 'hlcw0c'}))
-    g = BeautifulSoup(parentDiv, 'html.parser').findAll('div', attrs={'class':'g'})
-
+    parentDiv = str(BeautifulSoup(html, "html.parser").findAll('div', attrs={'id': 'rso'}))
+    g = BeautifulSoup(parentDiv, 'html.parser').findAll(lambda tag: tag.name == 'div' and tag.get('class') == ['g'])
 
     data = []
     for i in range(0,len(g)):
@@ -103,10 +102,8 @@ def data():
         }
 
         data.append(defaultData)
-
     return jsonify(data)
     # print(timer() - start)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
